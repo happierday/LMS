@@ -15,10 +15,10 @@ public class BranchDAO extends BaseDAO{
 	}
 
 	public List<Branch> getBranchForBook(Integer bookId) throws SQLException{
-		ResultSet rs = showTables("select branch.branchId, branch.branchName, branch.branchAddress from tbl_library_branch branch\n" + 
+		ResultSet rs = showTables("select branch.branchId, branch.branchName, branch.branchAddress, copy.noOfCopies from tbl_library_branch branch\n" + 
 				"join tbl_book_copies copy on branch.branchId = copy.branchId\n" + 
 				"where copy.bookId = ?", new Object[] {bookId});
-		return extractBranchOnly(rs);
+		return extractBranchWithCopy(rs);
 	}
 
 	public List<Branch> getAllBranches() throws SQLException{
@@ -34,6 +34,20 @@ public class BranchDAO extends BaseDAO{
 			branch.setId(rs.getInt(1));
 			branch.setName(rs.getString(2));
 			branch.setAddress(rs.getString(3));
+			branchs.add(branch);
+		}
+		return branchs;
+	}
+	
+	private List<Branch> extractBranchWithCopy(ResultSet rs) throws SQLException {
+		List<Branch> branchs = new LinkedList<Branch>();
+		Branch branch = null;
+		while(rs.next()) {
+			branch = new Branch();
+			branch.setId(rs.getInt(1));
+			branch.setName(rs.getString(2));
+			branch.setAddress(rs.getString(3));
+			branch.setCopies(rs.getInt(4));
 			branchs.add(branch);
 		}
 		return branchs;

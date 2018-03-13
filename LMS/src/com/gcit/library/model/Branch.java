@@ -7,6 +7,7 @@ public class Branch {
 	private String name;
 	private String address;
 	private List<Book> books;
+	private Integer copies;
 	public Integer getId() {
 		return id;
 	}
@@ -30,6 +31,13 @@ public class Branch {
 	}
 	public void setBooks(List<Book> books) {
 		this.books = books;
+	}
+	
+	public Integer getCopies() {
+		return copies;
+	}
+	public void setCopies(Integer copies) {
+		this.copies = copies;
 	}
 	@Override
 	public int hashCode() {

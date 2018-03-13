@@ -57,5 +57,29 @@ public class BookDAO extends BaseDAO{
 		return books;
 	}
 
+	public void updateBook(Book book, Object[] genres, Object[] authors, Integer pubId, Object[] branches,
+			Object[] copies) throws ClassNotFoundException, SQLException {
+		save("update tbl_book set title = ? where bookId = ?", new Object[] {book.getTitle(),book.getId()});
+		save("delete from tbl_book_genres where bookId = ?", new Object[] {book.getId()});
+		if(genres != null) {
+			for(Object i : genres) {
+				save("insert into tbl_book_genres values(?,?)", new Object[] {i,book.getId()});
+			}
+		}
+		save("delete from tbl_book_authors where bookId = ?", new Object[] {book.getId()});
+		if(authors != null) {
+			for(Object i : authors) {
+				save("insert into tbl_book_authors values(?,?)", new Object[] {book.getId(),i});
+			}
+		}
+		save("update tbl_book set pubId = ? where bookId = ?", new Object[] {pubId,book.getId()});
+		save("delete from tbl_book_copies where bookId = ?", new Object[] {book.getId()});
+		if(branches != null) {
+			for(Object i : branches) {
+				save("insert into tbl_book_copies values(?,?,10)", new Object[] {book.getId(),i});
+			}
+		}
+	}
+
 
 }

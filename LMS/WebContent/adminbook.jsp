@@ -37,7 +37,11 @@ if(total % 10 == 0){
 </script>
 <div class = "container">
 	<div class="jumbotron">
-
+	<div class = "row  show-hide-message">
+        <div class ="<%=request.getAttribute("messageClass")%>">
+            ${ message }
+        </div>
+    </div>
 	<table class="table table-striped">
 	 	<tr>
 		    <th>ID</th>
@@ -64,9 +68,9 @@ if(total % 10 == 0){
 	    				}%>
 	    			</td>
 	    			<td>
-	    				<%for(Branch br: b.getBranches()) {
-	    					out.println(br.getName() + " | ");
-	    				}%>
+	    				<%for(Branch br: b.getBranches()) { %>
+	    					<%=br.getName() + "has " + br.getCopies()+ " copies | "%>
+	    				<%}%>
 	    			</td>	
 	    			<td><%=b.getPublisher().getName()%></td>
 	    			

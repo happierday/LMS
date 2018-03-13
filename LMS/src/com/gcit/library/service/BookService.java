@@ -58,4 +58,24 @@ public class BookService {
 		}
 		return null;
 	}
+
+	public void updateBook(Book book, Object[] genres, Object[] authors, Integer pubId, Object[] branches,
+			Object[] copies) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = connUtil.getConnection();
+			BookDAO bdao = new BookDAO(conn);
+			bdao.updateBook(book,genres,authors,pubId,branches,copies);
+			conn.commit();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			if(conn != null) {
+				conn.rollback();
+			}
+		} finally{
+			if(conn!=null){
+				conn.close();
+			}
+		}
+	}
 }
