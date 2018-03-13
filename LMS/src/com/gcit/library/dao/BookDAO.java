@@ -28,10 +28,10 @@ public class BookDAO extends BaseDAO{
 	
 	public Integer getBookCount(String search) throws SQLException {
 		if(search == null) {
-			return getCount("select count(*) from tbl_book;");
+			return getCount("select count(*) from tbl_book;",null);
 		} 
 		String s = "%" + search + "%";
-		return getCount("select count(*) from tbl_book where title like " + s);
+		return getCount("select count(*) from tbl_book where title like ?", new Object[] {s});
 	}
 	
 	public List<Book> getByPK(Integer bookId) throws SQLException {
@@ -95,7 +95,24 @@ public class BookDAO extends BaseDAO{
 	}
 
 	public void deleteByPK(Integer bookId) throws ClassNotFoundException, SQLException {
-		save("delete tbl_book where bookId = ?", new Object[] {bookId});
+		save("delete from tbl_book where bookId = ?", new Object[] {bookId});
+	}
+
+	public Integer addBookGetPK(Book book) throws SQLException {
+		return addGetPK("insert into tbl_book (title) values(?)", new Object[] {book.getTitle()});
+	}
+
+	public void insertBook(Book book, Integer[] genres, Integer[] authors, Integer pubId, List<Branch> branches) throws ClassNotFoundException, SQLException {
+		for(Integer g: genres) {
+			save("insert into tbl_book_genres values(?,?)", new Object[] {g,book.getId()});
+		}
+		for(Integer a: authors) {
+			save("insert into tbl_book_authors values(?,?)", new Object[] {book.getId(),a});
+		}
+		save("update tbl_book set pubId = ?  where bookId = ?", new Object[] {pubId,book.getId()});
+		for(Branch branch: branches) {
+			save("insert into tbl_book_copies values(?,?,?)", new Object[] {book.getId(),branch.getId(),branch.getCopies()});
+		}
 	}
 
 }

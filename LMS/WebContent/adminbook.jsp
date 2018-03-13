@@ -10,6 +10,7 @@
 <%
 BookService bookService = new BookService();
 Integer total = 0;
+String search = "";
 if(request.getAttribute("total") != null){
 	total = (Integer)request.getAttribute("total");
 } else {
@@ -21,6 +22,10 @@ if(request.getAttribute("books") == null){
 	books = bookService.getAllBooks(0);
 }else {
 	books = (List<Book>)request.getAttribute("books");
+}
+if(request.getAttribute("search")!=null){
+	total = bookService.getBookCount((String)request.getAttribute("search"));
+	search = (String)request.getAttribute("search");
 }
 
 if(total % 10 == 0){
@@ -41,7 +46,10 @@ if(request.getAttribute("loans") != null){
 			  data: { "searchString": $('#searchString').val() 
 				}
 		}).done(function( data ) {
-			$('#bookTable').html(data);
+			var s = data.split("@");
+			$('#bookTable').html(s[0]);
+			$('#page').html(s[1]);
+			$('#searchString').html(s[2]);
 		});
 	}
 </script>
@@ -81,8 +89,9 @@ if(request.getAttribute("loans") != null){
     <%} %>
     <p>Book Menu</p>
     <div class="input-group">
-			<input type="text" class="form-control" placeholder="Search Books" aria-describedby="basic-addon1" id="searchString" oninput="searchBook()">
+		<input type="text" class="form-control" placeholder="Search Books" value ="<%=search %>" aria-describedby="basic-addon1" id="searchString" oninput="searchBook()">
 	</div>
+	<button class="btn btn-primary" href ="editbook.jsp" data-toggle="modal" data-target="#EditModal">Add Book</button>
 	<table class="table table-striped" id = "bookTable">
 	 	<tr>
 		    <th>ID</th>
@@ -131,10 +140,14 @@ if(request.getAttribute("loans") != null){
 		</div>
 	</div>
 	<center>
-		<nav aria-label="Page navigation example">
+		<nav aria-label="Page navigation example" id = "page">
 		  <ul class="pagination">
 		  	<% for(int i = 1; i<= pageSize; i++) {%>
-		    		<li class="page-item"><a class="page-link" href="bookpage?pageNo=<%=i%>"><%=i %></a></li>
+		  		<%if (search!=null) {%>
+		    			<li class="page-item"><a class="page-link" href="bookpage?pageNo=<%=i%>&searchString=<%=search%>"><%=i %></a></li>
+		    		<%} else { %>
+		    			<li class="page-item"><a class="page-link" href="bookpage?pageNo=<%=i%>"><%=i %></a></li>
+		    		<%} %>
 		    <%} %>
 		  </ul>
 		</nav>

@@ -16,7 +16,7 @@ public class PublisherDAO extends BaseDAO{
 	}
 	
 	public List<Publisher> getPublisherForBook(Integer bookId) throws SQLException{
-		ResultSet rs = showTables("select publisher.publisherId, publisher.publisherName from tbl_publisher publisher\n" + 
+		ResultSet rs = showTables("select * from tbl_publisher publisher\n" + 
 				"join tbl_book book on publisher.publisherId = book.pubId\n" + 
 				"where book.bookId = ?", new Object[] {bookId});
 		return extractPublisherOnly(rs);
@@ -34,6 +34,8 @@ public class PublisherDAO extends BaseDAO{
 			publisher = new Publisher();
 			publisher.setId(rs.getInt(1));
 			publisher.setName(rs.getString(2));
+			publisher.setAddress(rs.getString(3));
+			publisher.setPhone(rs.getString(4));
 			publishers.add(publisher);
 		}
 		return publishers;

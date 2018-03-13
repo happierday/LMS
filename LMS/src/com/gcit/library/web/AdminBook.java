@@ -42,6 +42,23 @@ public class AdminBook extends HttpServlet {
 		String reqUrl = request.getRequestURI().substring(request.getContextPath().length(),
 				request.getRequestURI().length());
 		switch(reqUrl) {
+			case "/bookpage":
+				Integer pageNo = Integer.parseInt(request.getParameter("pageNo"));
+				try {
+					List<Book> books = null;
+					if(request.getParameter("searchString")!=null) {
+						books = bookService.getBookByName(request.getParameter("searchString"), pageNo-1);
+						request.setAttribute("search", request.getParameter("searchString"));
+					}else {
+						books = bookService.getAllBooks(pageNo-1);
+						request.removeAttribute("search");
+					}
+					request.setAttribute("books", books);
+				} catch (SQLException e1) {
+					request.setAttribute("message", "Search Book Failed!");
+					request.setAttribute("messageClass", "alert alert-danger");
+				}
+				break;
 			case "/deletebook":
 				Integer bookId = Integer.parseInt(request.getParameter("bookId"));
 				try {
@@ -73,14 +90,30 @@ public class AdminBook extends HttpServlet {
 		String reqUrl = request.getRequestURI().substring(request.getContextPath().length(),
 				request.getRequestURI().length());
 		Boolean isAJAX = Boolean.FALSE;
+		Integer [] genres = null;
+		Integer [] authors = null;
+		Integer pubId = null;
+		Integer [] branchId = null;
+		Integer [] copies = null;
+		Book book = null;
+		List<Branch> branch = null;
 		switch(reqUrl) {
-			case "/bookpage":
-				Integer pageNo = Integer.parseInt(request.getParameter("pageNo"));
+			case "/addbook":
+				book = new Book();
+				book.setTitle(request.getParameter("title"));
 				try {
-					List<Book> books = bookService.getAllBooks(pageNo-1);
-					request.setAttribute("books", books);
-				} catch (SQLException e1) {
-					request.setAttribute("message", "Search Book Failed!");
+					book.setId(bookService.addBookGetPK(book));
+					genres = getObject(request.getParameterValues("genres"));
+					authors = getObject(request.getParameterValues("authors"));
+					pubId = Integer.parseInt(request.getParameter("publisher"));
+					branchId = getObject(request.getParameterValues("branchId"));
+					copies = getObject(request.getParameterValues("noOfCopies"));
+					branch = getBranchWithCopy(branchId, copies);
+					bookService.insertBook(book,genres,authors,pubId,branch);
+					request.setAttribute("message", "Add Book Successful!");
+					request.setAttribute("messageClass", "alert alert-success");
+				} catch (SQLException e2) {
+					request.setAttribute("message", "Add Book Failed!");
 					request.setAttribute("messageClass", "alert alert-danger");
 				}
 				break;
@@ -88,7 +121,12 @@ public class AdminBook extends HttpServlet {
 				try {
 					String search = request.getParameter("searchString");
 					List<Book> books = bookService.getBookByName(search,0);
-					System.out.println(books.size());
+					int total = bookService.getBookCount(search),pageSize = 0;
+					if(total % 10 == 0) {
+						pageSize = total /10;
+					}else {
+						pageSize = total / 10 + 1;
+					}
 					request.setAttribute("total", books.size());
 					StringBuffer strBuf = new StringBuffer();
 					strBuf.append(
@@ -116,6 +154,16 @@ public class AdminBook extends HttpServlet {
 					}
 					strBuf.append("</table>");
 					strBuf.append("@");
+					strBuf.append("<nav aria-label='Page navigation example' id = 'page'>" + 
+							"		  <ul class='pagination'>\n"); 
+					for(int i = 1; i<=pageSize;i++) {
+						strBuf.append("<li class='page-item'><a class='page-link' "+
+							"href='bookpage?pageNo=" + i + "&searchString="+ search +"'>" + i + "</a></li>");
+					}
+					strBuf.append("</ul></nav>");
+					strBuf.append("@");
+					strBuf.append("<div class='input-group' <input type='text' class='form-control' "+
+					"aria-describedby='basic-addon1' id='searchString' oninput='searchBook()' value='"+search+"'></div>");
 					response.getWriter().write(strBuf.toString());
 					isAJAX = Boolean.TRUE;
 				} catch (SQLException e) {
@@ -123,15 +171,15 @@ public class AdminBook extends HttpServlet {
 				}
 				break;
 			case "/editbook":
-				Book book = new Book();
+				book = new Book();
 				book.setId(Integer.parseInt(request.getParameter("bookId")));
 				book.setTitle(request.getParameter("title"));
-				Integer [] genres = getObject(request.getParameterValues("genres"));
-				Integer [] authors = getObject(request.getParameterValues("authors"));
-				Integer pubId = Integer.parseInt(request.getParameter("publisher"));
-				Integer [] branchId = getObject(request.getParameterValues("branchId"));
-				Integer [] copies = getObject(request.getParameterValues("noOfCopies"));
-				List<Branch> branch = getBranchWithCopy(branchId, copies);
+				genres = getObject(request.getParameterValues("genres"));
+				authors = getObject(request.getParameterValues("authors"));
+				pubId = Integer.parseInt(request.getParameter("publisher"));
+				branchId = getObject(request.getParameterValues("branchId"));
+				copies = getObject(request.getParameterValues("noOfCopies"));
+				branch = getBranchWithCopy(branchId, copies);
 				try {
 					bookService.updateBook(book,genres,authors,pubId,branch);
 					request.setAttribute("message", "Edit Book Successful");
@@ -173,7 +221,6 @@ public class AdminBook extends HttpServlet {
 				branch = new Branch();
 				branch.setId(branchId[i]);
 				branch.setCopies(copy[i]);
-				System.out.println(branch.toString());
 				branches.add(branch);
 			}
 		}

@@ -105,6 +105,7 @@ public class BookService {
 			conn = connUtil.getConnection();
 			BookDAO bdao = new BookDAO(conn);
 			bdao.deleteByPK(bookId);
+			conn.commit();
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			if(conn!=null){
@@ -131,5 +132,45 @@ public class BookService {
 			}
 		}
 		return null;
+	}
+
+	public Integer addBookGetPK(Book book) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = connUtil.getConnection();
+			BookDAO bdao = new BookDAO(conn);
+			Integer pk = bdao.addBookGetPK(book);
+			conn.commit();
+			return pk;
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			if(conn!=null){
+				conn.rollback();
+			}
+		} finally{
+			if(conn!=null){
+				conn.close();
+			}
+		}
+		return null;
+	}
+
+	public void insertBook(Book book,Integer[] genres, Integer[] authors, Integer pubId, List<Branch> branch) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = connUtil.getConnection();
+			BookDAO bdao = new BookDAO(conn);
+			bdao.insertBook(book,genres,authors,pubId,branch);
+			conn.commit();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			if(conn!=null){
+				conn.rollback();
+			}
+		} finally{
+			if(conn!=null){
+				conn.close();
+			}
+		}
 	}
 }
