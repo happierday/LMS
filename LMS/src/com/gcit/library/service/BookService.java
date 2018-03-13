@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.gcit.library.dao.BookDAO;
 import com.gcit.library.model.Book;
+import com.gcit.library.model.Branch;
 import com.gcit.library.service.ConnectionUtil;
 
 public class BookService {
@@ -59,13 +60,12 @@ public class BookService {
 		return null;
 	}
 
-	public void updateBook(Book book, Object[] genres, Object[] authors, Integer pubId, Object[] branches,
-			Object[] copies) throws SQLException {
+	public void updateBook(Book book, Object[] genres, Object[] authors, Integer pubId, List<Branch> branch) throws SQLException {
 		Connection conn = null;
 		try {
 			conn = connUtil.getConnection();
 			BookDAO bdao = new BookDAO(conn);
-			bdao.updateBook(book,genres,authors,pubId,branches,copies);
+			bdao.updateBook(book,genres,authors,pubId,branch);
 			conn.commit();
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();

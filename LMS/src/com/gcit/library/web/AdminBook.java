@@ -2,6 +2,8 @@ package com.gcit.library.web;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gcit.library.model.Book;
+import com.gcit.library.model.Branch;
 import com.gcit.library.service.BookService;
 
 /**
@@ -47,49 +50,65 @@ public class AdminBook extends HttpServlet {
 			case "/bookpage":
 				break;
 			case "/editbook":
-				print(request.getParameterValues("branchId"));
-				System.out.println(request.getParameterValues("branchId").length);
-				print(request.getParameterValues("noOfCopies"));
-				System.out.println(request.getParameterValues("noOfCopies").length);
-//				Book book = new Book();
-//				book.setId(Integer.parseInt(request.getParameter("bookId")));
-//				book.setTitle(request.getParameter("title"));
-//				Object [] genres = getObject(request.getParameterValues("genres"));
-//				Object [] authors = getObject(request.getParameterValues("authors"));
-//				Integer pubId = Integer.parseInt(request.getParameter("publisher"));
-//				Object [] branches = getObject(request.getParameterValues("branches"));
-//				Object [] copies = null;
-//				try {
-//					bookService.updateBook(book,genres,authors,pubId,branches,copies);
-//					request.setAttribute("message", "Edit Book Successful");
-//					request.setAttribute("messageClass", "alert alert-success");
-//				} catch (SQLException e) {
-//					request.setAttribute("message", "Edit Book Failed");
-//					request.setAttribute("messageClass", "alert alert-danger");
-//				}
+				Book book = new Book();
+				book.setId(Integer.parseInt(request.getParameter("bookId")));
+				book.setTitle(request.getParameter("title"));
+				Integer [] genres = getObject(request.getParameterValues("genres"));
+				Integer [] authors = getObject(request.getParameterValues("authors"));
+				Integer pubId = Integer.parseInt(request.getParameter("publisher"));
+				Integer [] branchId = getObject(request.getParameterValues("branchId"));
+				Integer [] copies = getObject(request.getParameterValues("noOfCopies"));
+				List<Branch> branch = getBranchWithCopy(branchId, copies);
+				try {
+					bookService.updateBook(book,genres,authors,pubId,branch);
+					request.setAttribute("message", "Edit Book Successful");
+					request.setAttribute("messageClass", "alert alert-success");
+				} catch (SQLException e) {
+					request.setAttribute("message", "Edit Book Failed");
+					request.setAttribute("messageClass", "alert alert-danger");
+				}
 				break;
 		}
 		RequestDispatcher rd = request.getRequestDispatcher(forward);
 		rd.forward(request, response);
 	}
 	
-	public Object[] getObject(String [] arr) {
-		Object[] object = null;
+	public Integer[] getObject(String [] arr) {
+		Integer[] object = null;
 		if(arr.length!=0) {
-			object = new Object[arr.length];
+			object = new Integer[arr.length];
 			int index = 0;
 			for(String s: arr) {
-				object[index] = Integer.parseInt(s);
-				index++;
+				if(s.length() == 0) {
+					object[index] = -1;
+				}else {
+					object[index] = Integer.parseInt(s);
+				}
+					index++;
 			}
 		}
 		return object;
 	}
 	
+	public List<Branch> getBranchWithCopy(Integer [] branchId, Integer[]copy){
+		List<Branch> branches = new ArrayList<Branch>();
+		Branch branch = null;
+		for(int i = 0; i< copy.length; i++) {
+			if(copy[i] != -1) {
+				branch = new Branch();
+				branch.setId(branchId[i]);
+				branch.setCopies(copy[i]);
+				System.out.println(branch.toString());
+				branches.add(branch);
+			}
+		}
+		return branches;
+	}
+	
 	public void print(String []arr) {
 		int index = 1;
 		for(String s: arr) {
-			System.out.print("index " +index + ": "+ s + " ");
+			System.out.print("index " +index + ": "+ s.length() + " ");
 			index ++;
 		}
 		System.out.println("");

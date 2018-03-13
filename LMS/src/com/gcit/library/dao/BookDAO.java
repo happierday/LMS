@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gcit.library.model.Book;
+import com.gcit.library.model.Branch;
 
 public class BookDAO extends BaseDAO{
 
@@ -57,8 +58,7 @@ public class BookDAO extends BaseDAO{
 		return books;
 	}
 
-	public void updateBook(Book book, Object[] genres, Object[] authors, Integer pubId, Object[] branches,
-			Object[] copies) throws ClassNotFoundException, SQLException {
+	public void updateBook(Book book, Object[] genres, Object[] authors, Integer pubId, List<Branch> branch) throws ClassNotFoundException, SQLException {
 		save("update tbl_book set title = ? where bookId = ?", new Object[] {book.getTitle(),book.getId()});
 		save("delete from tbl_book_genres where bookId = ?", new Object[] {book.getId()});
 		if(genres != null) {
@@ -74,9 +74,9 @@ public class BookDAO extends BaseDAO{
 		}
 		save("update tbl_book set pubId = ? where bookId = ?", new Object[] {pubId,book.getId()});
 		save("delete from tbl_book_copies where bookId = ?", new Object[] {book.getId()});
-		if(branches != null) {
-			for(Object i : branches) {
-				save("insert into tbl_book_copies values(?,?,10)", new Object[] {book.getId(),i});
+		if(branch != null) {
+			for(Branch b : branch) {
+				save("insert into tbl_book_copies values(?,?,?)", new Object[] {book.getId(),b.getId(),b.getCopies()});
 			}
 		}
 	}

@@ -74,5 +74,10 @@ public class Branch {
 			return false;
 		return true;
 	}
+	@Override
+	public String toString() {
+		return "Branch [id=" + id + ", name=" + name + ", address=" + address + ", books=" + books + ", copies="
+				+ copies + "]";
+	}
 	
 }
