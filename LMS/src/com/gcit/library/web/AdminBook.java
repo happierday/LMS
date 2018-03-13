@@ -14,12 +14,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.gcit.library.model.Book;
 import com.gcit.library.model.Branch;
+import com.gcit.library.model.Loan;
 import com.gcit.library.service.BookService;
 
 /**
  * Servlet implementation class AdminBook
  */
-@WebServlet({"/bookpage","/editbook","/addbook"})
+@WebServlet({"/bookpage","/editbook","/addbook","/deletebook"})
 public class AdminBook extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        private String forward = "adminbook.jsp";
@@ -36,8 +37,29 @@ public class AdminBook extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		String reqUrl = request.getRequestURI().substring(request.getContextPath().length(),
+				request.getRequestURI().length());
+		switch(reqUrl) {
+			case "/deletebook":
+				Integer bookId = Integer.parseInt(request.getParameter("bookId"));
+				try {
+					List<Loan> loans = bookService.isReturned(bookId);
+					if(loans.size() > 0) {
+						request.setAttribute("loans", loans);
+						break;
+					}else {
+						bookService.deleteBookByPK(bookId);
+						request.setAttribute("message", "Delete book successful");
+						request.setAttribute("messageClass", "alert alert-success");
+					}
+				} catch (SQLException e) {
+					request.setAttribute("message", "Delete book failed");
+					request.setAttribute("messageClass", "alert alert-danger");
+				}
+				break;
+		}
+		RequestDispatcher rd = request.getRequestDispatcher(forward);
+		rd.forward(request, response);
 	}
 
 	/**

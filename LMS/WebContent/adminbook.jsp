@@ -1,3 +1,4 @@
+<%@page import="com.gcit.library.model.Loan"%>
 <%@page import="com.gcit.library.model.Branch"%>
 <%@page import="com.gcit.library.model.Author"%>
 <%@page import="com.gcit.library.model.Genre"%>
@@ -22,6 +23,10 @@ if(total % 10 == 0){
 }else {
 	pageSize = total / 10 + 1;
 }
+List<Loan> loans = null;
+if(request.getAttribute("loans") != null){
+	loans = (List<Loan>)request.getAttribute("loans");
+}
 %>
 <script>
 	function searchAuthors(){
@@ -42,6 +47,34 @@ if(total % 10 == 0){
             ${ message }
         </div>
     </div>
+    <%if(loans != null) {%>
+    		<p>This book is loaned out, can't delete it until it is returned</p>
+    		<table class="table able-striped">
+		 	<tr>
+			    <th>ID</th>
+			    <th>Title</th>
+			    <th>Borrower</th>
+			    <th>Branch</th>
+			    <th>DateOut</th>
+			    <th>DueDate</th>
+			    <th>DateIn</th>
+		 	</tr>
+	    		<%for(Loan b: loans) {%>
+	    			<tr>
+		    			<td><%=loans.indexOf(b)+1 %></td>
+		    			<td><%=b.getBookTitle() %></td>
+		    			<td><%=b.getBorrowerName() %></td>
+		    			<td><%=b.getBranchName() %></td>
+		    			<td><%=b.getDateOut() %></td>	
+		    			<td><%=b.getDueDate()%></td>
+		    			<td></td>
+	    			</tr>
+	    		<%} %>
+		</table>
+		<br>
+		<hr>
+    <%} %>
+    <p>Book Menu</p>
 	<table class="table table-striped">
 	 	<tr>
 		    <th>ID</th>
@@ -58,18 +91,18 @@ if(total % 10 == 0){
 	    			<td><%=books.indexOf(b)+1 %></td>
 	    			<td><%=b.getTitle() %></td>
 	    			<td>
-	    				<%for(Genre g: b.getGenres()){ 
-	    					out.println(g.getName() + " | ");
-	    				}%>
+	    				<%for(Genre g: b.getGenres()){ %>
+	    					<%=g.getName()%><br>
+	    				<% }%>
 	    			</td>
 	    			<td>
-	    				<%for(Author a: b.getAuthors()) {
-	    					out.println(a.getName() + " | ");
-	    				}%>
+	    				<%for(Author a: b.getAuthors()) {%>
+	    					<%=a.getName()%><br>
+	    				<%}%>
 	    			</td>
 	    			<td>
 	    				<%for(Branch br: b.getBranches()) { %>
-	    					<%=br.getName() + "has " + br.getCopies()+ " copies | "%>
+	    					<%=br.getName() + "has " + br.getCopies()+ " copies"%><br>
 	    				<%}%>
 	    			</td>	
 	    			<td><%=b.getPublisher().getName()%></td>
@@ -78,7 +111,7 @@ if(total % 10 == 0){
 						href="editbook.jsp?bookId=<%=b.getId()%>"
 						data-toggle="modal" data-target="#EditModal">Edit</button></td>
 				<td><button class="btn btn-danger"
-						onclick="javascript:location.href='deleteBook?bookId=<%=b.getId()%>'">Delete</button></td>
+						onclick="javascript:location.href='deletebook?bookId=<%=b.getId()%>'">Delete</button></td>
     			</tr>
     		<%} %>
 	</table>

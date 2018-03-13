@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.gcit.library.model.Book;
 import com.gcit.library.model.Branch;
+import com.gcit.library.model.Loan;
 
 public class BookDAO extends BaseDAO{
 
@@ -81,5 +82,7 @@ public class BookDAO extends BaseDAO{
 		}
 	}
 
-
+	public void deleteByPK(Integer bookId) throws ClassNotFoundException, SQLException {
+		save("delete tbl_book where bookId = ?", new Object[] {bookId});
+	}
 }

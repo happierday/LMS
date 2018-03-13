@@ -5,8 +5,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.gcit.library.dao.BookDAO;
+import com.gcit.library.dao.LoanDAO;
 import com.gcit.library.model.Book;
 import com.gcit.library.model.Branch;
+import com.gcit.library.model.Loan;
 import com.gcit.library.service.ConnectionUtil;
 
 public class BookService {
@@ -70,6 +72,42 @@ public class BookService {
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			if(conn != null) {
+				conn.rollback();
+			}
+		} finally{
+			if(conn!=null){
+				conn.close();
+			}
+		}
+	}
+
+	public List<Loan> isReturned(Integer bookId) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = connUtil.getConnection();
+			BookDAO bdao = new BookDAO(conn);
+			LoanDAO ldao = new LoanDAO(conn);
+			Book book = bdao.getByPK(bookId).get(0);
+			return ldao.getLoanForBook(book);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		} finally{
+			if(conn!=null){
+				conn.close();
+			}
+		}
+		return null;
+	}
+
+	public void deleteBookByPK(Integer bookId) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = connUtil.getConnection();
+			BookDAO bdao = new BookDAO(conn);
+			bdao.deleteByPK(bookId);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			if(conn!=null){
 				conn.rollback();
 			}
 		} finally{
