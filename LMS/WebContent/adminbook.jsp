@@ -9,7 +9,12 @@
 <%@include file="../index.html" %>
 <%
 BookService bookService = new BookService();
-Integer total = bookService.getBookCount(null);
+Integer total = 0;
+if(request.getAttribute("total") != null){
+	total = (Integer)request.getAttribute("total");
+} else {
+	total = bookService.getBookCount(null);
+}
 Integer pageSize = 0;
 List<Book> books = null;
 if(request.getAttribute("books") == null){
@@ -29,10 +34,10 @@ if(request.getAttribute("loans") != null){
 }
 %>
 <script>
-	function searchAuthors(){
+	function searchBook(){
 		$.ajax({
 			  method: "POST",
-			  url: "searchBooks",
+			  url: "searchbooks",
 			  data: { "searchString": $('#searchString').val() 
 				}
 		}).done(function( data ) {
@@ -48,7 +53,7 @@ if(request.getAttribute("loans") != null){
         </div>
     </div>
     <%if(loans != null) {%>
-    		<p>This book is loaned out, can't delete it until it is returned</p>
+    		<p>Loan Table</p>
     		<table class="table able-striped">
 		 	<tr>
 			    <th>ID</th>
@@ -75,7 +80,10 @@ if(request.getAttribute("loans") != null){
 		<hr>
     <%} %>
     <p>Book Menu</p>
-	<table class="table table-striped">
+    <div class="input-group">
+			<input type="text" class="form-control" placeholder="Search Books" aria-describedby="basic-addon1" id="searchString" oninput="searchBook()">
+	</div>
+	<table class="table table-striped" id = "bookTable">
 	 	<tr>
 		    <th>ID</th>
 		    <th>Title</th>

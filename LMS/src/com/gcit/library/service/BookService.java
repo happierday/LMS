@@ -116,4 +116,20 @@ public class BookService {
 			}
 		}
 	}
+
+	public List<Book> getBookByName(String search,Integer pageNo) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = connUtil.getConnection();
+			BookDAO bdao = new BookDAO(conn);
+			return bdao.getBookByName(search,pageNo);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		} finally{
+			if(conn!=null){
+				conn.close();
+			}
+		}
+		return null;
+	}
 }

@@ -39,6 +39,18 @@ public class BookDAO extends BaseDAO{
 		return extractBookDetail(rs);
 	}
 
+
+	public List<Book> getBookByName(String search, Integer pageNo) throws SQLException {
+		String query = "%" + search + "%";
+		ResultSet rs = null;
+		if(pageNo == null) {
+			rs = showTables("select * from tbl_book where title like ?", new Object[] {query});
+		}else {
+			rs = showTables("select * from tbl_book where title like ? limit ?,?", new Object[] {query,pageNo * 10,10}); 
+		}
+		return extractBookDetail(rs);
+	}
+	
 	public List<Book> extractBookDetail(ResultSet rs) throws SQLException{
 		List<Book> books = new ArrayList<Book>();
 		Book book = null;
@@ -85,4 +97,5 @@ public class BookDAO extends BaseDAO{
 	public void deleteByPK(Integer bookId) throws ClassNotFoundException, SQLException {
 		save("delete tbl_book where bookId = ?", new Object[] {bookId});
 	}
+
 }
