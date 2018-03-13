@@ -21,6 +21,11 @@ public class BranchDAO extends BaseDAO{
 		return extractBranchOnly(rs);
 	}
 
+	public List<Branch> getAllBranches() throws SQLException{
+		ResultSet rs = showTables("select * from tbl_library_branch;",null);
+		return extractBranchOnly(rs);
+	}
+	
 	private List<Branch> extractBranchOnly(ResultSet rs) throws SQLException {
 		List<Branch> branchs = new LinkedList<Branch>();
 		Branch branch = null;

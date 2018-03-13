@@ -22,6 +22,11 @@ public class AuthorDAO extends BaseDAO{
 		return extractAuthorOnly(rs);
 	}
 
+	public List<Author> getAllAuthors() throws SQLException{
+		ResultSet rs = showTables("select * from tbl_author",null);
+		return extractAuthorOnly(rs);
+	}
+	
 	private List<Author> extractAuthorOnly(ResultSet rs) throws SQLException {
 		List<Author> authors = new LinkedList<Author>();
 		Author author = null;

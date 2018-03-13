@@ -16,12 +16,17 @@ public class GenreDAO extends BaseDAO{
 	}
 
 	public List<Genre> getGenreForBook(Integer bookId) throws SQLException{
-		ResultSet rs = showTables("select genre.genre_Id, genre.genreName from tbl_genre genre\n" + 
+		ResultSet rs = showTables("select genre.genre_Id, genre.genre_Name from tbl_genre genre\n" + 
 				"join tbl_book_genres genres on genre.genre_Id = genres.genre_Id\n" + 
 				"where genres.bookId = ?", new Object[] {bookId});
 		return extractGenreOnly(rs);
 	}
 
+	public List<Genre> getAllGenres() throws SQLException{
+		ResultSet rs = showTables("select * from tbl_genre",null);
+		return extractGenreOnly(rs);
+	}
+	
 	private List<Genre> extractGenreOnly(ResultSet rs) throws SQLException {
 		List<Genre> genres = new LinkedList<Genre>();
 		Genre genre = null;

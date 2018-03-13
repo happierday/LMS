@@ -19,7 +19,22 @@ public class BookService {
 			return bdao.getALlBook(pageNo);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			conn.rollback();
+		} finally{
+			if(conn!=null){
+				conn.close();
+			}
+		}
+		return null;
+	}
+	
+	public Book getBookByPK(Integer bookId) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = connUtil.getConnection();
+			BookDAO bdao = new BookDAO(conn);
+			return bdao.getByPK(bookId).get(0);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
 		} finally{
 			if(conn!=null){
 				conn.close();
@@ -36,7 +51,6 @@ public class BookService {
 			return bdao.getBookCount(search);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-			conn.rollback();
 		} finally{
 			if(conn!=null){
 				conn.close();

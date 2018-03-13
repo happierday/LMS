@@ -14,7 +14,7 @@ public class Book {
 	private String title;
 	private List<Author> authors;
 	private List<Branch> branches;
-	private List<Genre> genre;
+	private List<Genre> genres;
 	private Publisher publisher;
 	public Integer getId() {
 		return id;
@@ -40,11 +40,11 @@ public class Book {
 	public void setBranches(List<Branch> branches) {
 		this.branches = branches;
 	}
-	public List<Genre> getGenre() {
-		return genre;
+	public List<Genre> getGenres() {
+		return genres;
 	}
-	public void setGenre(List<Genre> genre) {
-		this.genre = genre;
+	public void setGenres(List<Genre> genres) {
+		this.genres = genres;
 	}
 	public Publisher getPublisher() {
 		return publisher;

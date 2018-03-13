@@ -17,11 +17,16 @@ public class PublisherDAO extends BaseDAO{
 	
 	public List<Publisher> getPublisherForBook(Integer bookId) throws SQLException{
 		ResultSet rs = showTables("select publisher.publisherId, publisher.publisherName from tbl_publisher publisher\n" + 
-				"join tbl_book book on publisher.publisherId = book.publisherId\n" + 
+				"join tbl_book book on publisher.publisherId = book.pubId\n" + 
 				"where book.bookId = ?", new Object[] {bookId});
 		return extractPublisherOnly(rs);
 	}
 
+	public List<Publisher> getAllPublishers() throws SQLException{
+		ResultSet rs = showTables("select * from tbl_publisher",null);
+		return extractPublisherOnly(rs);
+	}
+	
 	private List<Publisher> extractPublisherOnly(ResultSet rs) throws SQLException {
 		List<Publisher> publishers = new LinkedList<Publisher>();
 		Publisher publisher = null;
